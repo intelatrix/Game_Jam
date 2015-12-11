@@ -13,6 +13,8 @@ public class Player_Bear : MonoSingleton<Player_Bear>
     public int ConstMaxCharge = 100;
     int CurrentCharge = 0;
 
+	public float ConstAwayFrom = 2;
+
     Vector3 MissTowards;
 
     public Image ChargeBar;
@@ -56,9 +58,9 @@ public class Player_Bear : MonoSingleton<Player_Bear>
     	LerpTimeLeft += TimeManager.Instance.GetGameDeltaTime();
 		Vector3 NewTargetPosition;
     	if(TargetedBull.IfFacingRight)
-			NewTargetPosition = new Vector3(TargetedBull.transform.position.x,transform.position.y,0) + new Vector3(2,0,0);
+			NewTargetPosition = new Vector3(TargetedBull.transform.position.x,transform.position.y,0) + new Vector3(ConstAwayFrom,0,0);
 		else
-			NewTargetPosition = new Vector3(TargetedBull.transform.position.x,transform.position.y,0) + new Vector3(-2,0,0);;
+			NewTargetPosition = new Vector3(TargetedBull.transform.position.x,transform.position.y,0) + new Vector3(-ConstAwayFrom,0,0);;
 			 
 		transform.position = Vector3.Lerp(new Vector3(transform.position.x,transform.position.y,0), NewTargetPosition, LerpTimeLeft/ConstLerpTime);
 
@@ -76,6 +78,11 @@ public class Player_Bear : MonoSingleton<Player_Bear>
     {
 		LerpTimeLeft += TimeManager.Instance.GetGameDeltaTime();
 		transform.position = Vector3.Lerp(new Vector3(transform.position.x,transform.position.y,0), MissTowards, LerpTimeLeft/ConstLerpTime);
+
+		if(transform.position == MissTowards)
+		{
+			CurrentBearState = BearState.BEAR_NONE;
+		}
     }
 
     void IncreaseCharge(int AmountOfNewCharge)
@@ -91,10 +98,10 @@ public class Player_Bear : MonoSingleton<Player_Bear>
     	LerpTimeLeft = 0;
     }
 
-	public void StopMissing()
-    {
-		CurrentBearState = BearState.BEAR_NONE;
-    }
+//	public void StopMissing()
+//    {
+//		CurrentBearState = BearState.BEAR_NONE;
+//    }
 
     public void SetBearMiss(bool IfFacingRight)
     {
@@ -105,5 +112,15 @@ public class Player_Bear : MonoSingleton<Player_Bear>
 			MissTowards = transform.position + new Vector3(-1,0,0);
 
 		LerpTimeLeft = 0;
+    }
+
+	void OnTriggerEnter2D(Collider2D collision)
+    {
+    	if(collision.tag == "Bull" && (CurrentBearState == BearState.BEAR_ATTACK_MOTHER ))
+    	{
+	        Debug.Log("Bull Enter");   
+	        BasicBull EnteringBull = collision.GetComponent<BasicBull>();
+	        GameSceneManager.Instance.AddBullInsideList(EnteringBull);
+        }
     }
 }

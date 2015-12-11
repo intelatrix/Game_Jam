@@ -10,7 +10,17 @@ public class GameSceneManager : MonoSingleton<GameSceneManager>
 
     bool IfMiss = false;
     public float ConstMissTime = 1.0f;
+  
     float MissTimeLeft = 0f;
+
+    enum GameState
+    {
+    	GAME_NORMAL,
+    	GAME_MOTHER_QTE,
+    	GAME_FATHER_QTE
+    };
+
+    GameState CurrentState = GameState.GAME_NORMAL;
 
     void Start()
     {
@@ -24,14 +34,23 @@ public class GameSceneManager : MonoSingleton<GameSceneManager>
     
     void GameUpdate()
     {
-        NormalGameUpdate();
+    	switch(CurrentState)
+    	{
+    	case GameState.GAME_NORMAL:
+        	NormalGameUpdate();
+        	break;
+        case GameState.GAME_MOTHER_QTE:
+        	break;
+        case GameState.GAME_FATHER_QTE:
+       		break;
+        }
     }
 
     void NormalGameUpdate()
     {
 	    if(!IfMiss)
 	    {
-	        ArrowKeysPressed CurrentKeyPressed = ControlsUpdate();
+	        ArrowKeysPressed CurrentKeyPressed = NormalControlsUpdate();
 	        List<BasicBull> TempList = null;
 	        bool? IfPressRight = null;
 	        switch (CurrentKeyPressed)
@@ -70,8 +89,31 @@ public class GameSceneManager : MonoSingleton<GameSceneManager>
 			if(MissTimeLeft <=0)
 				IfMiss = false;
 
-			Player_Bear.Instance.StopMissing();
+			//Player_Bear.Instance.StopMissing();
         }
+    }
+
+    void MotherGameUpdate()
+    {
+	
+    }
+
+    ArrowKeysPressed MotherControlUpdate()
+    {
+		if (Input.GetKeyDown(KeyCode.LeftArrow))
+            return ArrowKeysPressed.KEYS_LEFT;
+
+        else if (Input.GetKeyDown(KeyCode.RightArrow))
+            return ArrowKeysPressed.KEYS_RIGHT;
+
+		else if (Input.GetKeyDown(KeyCode.UpArrow))
+            return ArrowKeysPressed.KEYS_UP;
+
+		else if (Input.GetKeyDown(KeyCode.DownArrow))
+            return ArrowKeysPressed.KEYS_DOWN;
+
+        else
+            return ArrowKeysPressed.KEYS_NONE;
     }
 
     void BearPunchBull(List<BasicBull> TempList)
@@ -97,20 +139,13 @@ public class GameSceneManager : MonoSingleton<GameSceneManager>
         KEYS_DOWN
     }
 
-    ArrowKeysPressed ControlsUpdate()
+    ArrowKeysPressed NormalControlsUpdate()
     {
 		if (Input.GetKeyDown(KeyCode.LeftArrow))
             return ArrowKeysPressed.KEYS_LEFT;
 
         else if (Input.GetKeyDown(KeyCode.RightArrow))
             return ArrowKeysPressed.KEYS_RIGHT;
-
-		else if (Input.GetKeyDown(KeyCode.UpArrow))
-            return ArrowKeysPressed.KEYS_UP;
-
-		else if (Input.GetKeyDown(KeyCode.DownArrow))
-            return ArrowKeysPressed.KEYS_DOWN;
-
         else
             return ArrowKeysPressed.KEYS_NONE;
     }
