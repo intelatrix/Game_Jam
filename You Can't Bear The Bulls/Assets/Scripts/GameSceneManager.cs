@@ -59,11 +59,12 @@ public class GameSceneManager : MonoSingleton<GameSceneManager>
     {
 		BasicBull TempBull = TempList[0];
 
-		Player_Bear.Instance.SetBearAttack(TempBull);
+
 
 		switch(TempBull.BullType)
     	{
     		case BasicBull.TypeOfBull.BULL_BABY:
+				Player_Bear.Instance.SetBearAttackBaby(TempBull);
 				BabyBull TempBabyBull = (BabyBull)TempBull;
     			TempBabyBull.GetHit();
     			break;
@@ -81,16 +82,16 @@ public class GameSceneManager : MonoSingleton<GameSceneManager>
 
     ArrowKeysPressed ControlsUpdate()
     {
-        if (Input.GetKey(KeyCode.LeftArrow))
+		if (Input.GetKeyDown(KeyCode.LeftArrow))
             return ArrowKeysPressed.KEYS_LEFT;
 
-        else if (Input.GetKey(KeyCode.RightArrow))
-            return ArrowKeysPressed.KEYS_LEFT;
+        else if (Input.GetKeyDown(KeyCode.RightArrow))
+            return ArrowKeysPressed.KEYS_RIGHT;
 
-        else if (Input.GetKey(KeyCode.UpArrow))
+		else if (Input.GetKeyDown(KeyCode.UpArrow))
             return ArrowKeysPressed.KEYS_UP;
 
-        else if (Input.GetKey(KeyCode.DownArrow))
+		else if (Input.GetKeyDown(KeyCode.DownArrow))
             return ArrowKeysPressed.KEYS_DOWN;
 
         else
