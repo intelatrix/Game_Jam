@@ -8,6 +8,10 @@ public class GameSceneManager : MonoSingleton<GameSceneManager>
     List<BasicBull> ListOfBullRight = new List<BasicBull>();
     List<BasicBull> ListofAllBulls = new List<BasicBull>();
 
+    bool IfMiss = false;
+    public float ConstMissTime = 1.0f;
+    float MissTimeLeft = 0f;
+
     void Start()
     {
   
@@ -25,32 +29,48 @@ public class GameSceneManager : MonoSingleton<GameSceneManager>
 
     void NormalGameUpdate()
     {
-        ArrowKeysPressed CurrentKeyPressed = ControlsUpdate();
-        List<BasicBull> TempList = null;
-        bool? IfPressRight = null;
-        switch (CurrentKeyPressed)
-        {
-            case ArrowKeysPressed.KEYS_LEFT:
-                TempList = ListOfBullLeft;
-                IfPressRight = false;
-                break;
-            case ArrowKeysPressed.KEYS_RIGHT:
-                TempList = ListOfBullRight;
-                IfPressRight = true;
-                break;
-        }
+	    if(!IfMiss)
+	    {
+	        ArrowKeysPressed CurrentKeyPressed = ControlsUpdate();
+	        List<BasicBull> TempList = null;
+	        bool? IfPressRight = null;
+	        switch (CurrentKeyPressed)
+	        {
+	            case ArrowKeysPressed.KEYS_LEFT:
+	                TempList = ListOfBullLeft;
+	                IfPressRight = false;
+	                break;
+	            case ArrowKeysPressed.KEYS_RIGHT:
+	                TempList = ListOfBullRight;
+	                IfPressRight = true;
+	                break;
+	        }
 
-        if (TempList == null)
-        {
-           
-        }
-        else if (TempList.Count > 0)
-        {
-			BearPunchBull(TempList);
+	        if (TempList == null)
+	        {
+	           
+	        }
+	        else 
+	        {
+				if (TempList.Count > 0)
+	       		{
+					BearPunchBull(TempList);
+		        }
+		        else
+		        {
+	        		Player_Bear.Instance.SetBearMiss((bool)IfPressRight);
+					MissTimeLeft =  ConstMissTime;
+					IfMiss = true;
+	       		}
+	        }
         }
         else
         {
-        	Player_Bear.Instance.SetBearMiss((bool)IfPressRight);
+			MissTimeLeft -= TimeManager.Instance.GetGameDeltaTime();
+			if(MissTimeLeft <=0)
+				IfMiss = false;
+
+			Player_Bear.Instance.StopMissing();
         }
     }
 

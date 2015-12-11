@@ -13,6 +13,8 @@ public class Player_Bear : MonoSingleton<Player_Bear>
     public int ConstMaxCharge = 100;
     int CurrentCharge = 0;
 
+    Vector3 MissTowards;
+
     public Image ChargeBar;
 
     enum BearState
@@ -41,22 +43,39 @@ public class Player_Bear : MonoSingleton<Player_Bear>
         switch (CurrentBearState)
         {
 			case BearState. BEAR_ATTACK_BABY:
-                BearAttackUpdate();
+                BearAttackBabyUpdate();
                 break;
+			case BearState.BEAR_MISS:
+				BearMissUpdate();
+				break;
         }
     }
 
-    void BearAttackUpdate()
+	void BearAttackBabyUpdate()
     {
     	LerpTimeLeft += TimeManager.Instance.GetGameDeltaTime();
-		transform.position = Vector3.Lerp(new Vector3(transform.position.x,transform.position.y,0), new Vector3(TargetedBull.transform.position.x,transform.position.y,0), LerpTimeLeft/ConstLerpTime);
+		Vector3 NewTargetPosition;
+    	if(TargetedBull.IfFacingRight)
+			NewTargetPosition = new Vector3(TargetedBull.transform.position.x,transform.position.y,0) + new Vector3(2,0,0);
+		else
+			NewTargetPosition = new Vector3(TargetedBull.transform.position.x,transform.position.y,0) + new Vector3(-2,0,0);;
+			 
+		transform.position = Vector3.Lerp(new Vector3(transform.position.x,transform.position.y,0), NewTargetPosition, LerpTimeLeft/ConstLerpTime);
 
-		if(transform.position == new Vector3(TargetedBull.transform.position.x,transform.position.y,0))
+		if(transform.position == NewTargetPosition)
     	{
     		CurrentBearState = BearState.BEAR_NONE;
     		GameSceneManager.Instance.BullGetPunched(TargetedBull);
     		TargetedBull = null;
     	}
+    }
+
+
+
+    void BearMissUpdate()
+    {
+		LerpTimeLeft += TimeManager.Instance.GetGameDeltaTime();
+		transform.position = Vector3.Lerp(new Vector3(transform.position.x,transform.position.y,0), MissTowards, LerpTimeLeft/ConstLerpTime);
     }
 
     void IncreaseCharge(int AmountOfNewCharge)
@@ -72,7 +91,19 @@ public class Player_Bear : MonoSingleton<Player_Bear>
     	LerpTimeLeft = 0;
     }
 
+	public void StopMissing()
+    {
+		CurrentBearState = BearState.BEAR_NONE;
+    }
+
     public void SetBearMiss(bool IfFacingRight)
     {
+		CurrentBearState = BearState.BEAR_MISS; 
+		if(IfFacingRight)
+			MissTowards = transform.position + new Vector3(1,0,0);
+		else
+			MissTowards = transform.position + new Vector3(-1,0,0);
+
+		LerpTimeLeft = 0;
     }
 }
