@@ -8,11 +8,9 @@ public class GameSceneManager : MonoSingleton<GameSceneManager>
     List<BasicBull> ListOfBullRight = new List<BasicBull>();
     List<BasicBull> ListofAllBulls = new List<BasicBull>();
 
-    Camera MainCamera;
-
     void Start()
     {
-        MainCamera = Camera.main;
+  
     }
 
     void Update()
@@ -44,22 +42,21 @@ public class GameSceneManager : MonoSingleton<GameSceneManager>
 
         if (TempList == null)
         {
-            if (IfPressRight != null)
-            {
-                Player_Bear.Instance.SetBearMiss((bool)IfPressRight);
-            }
+           
         }
         else if (TempList.Count > 0)
         {
 			BearPunchBull(TempList);
+        }
+        else
+        {
+        	Player_Bear.Instance.SetBearMiss((bool)IfPressRight);
         }
     }
 
     void BearPunchBull(List<BasicBull> TempList)
     {
 		BasicBull TempBull = TempList[0];
-
-
 
 		switch(TempBull.BullType)
     	{
